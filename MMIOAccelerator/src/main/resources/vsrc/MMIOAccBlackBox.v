@@ -36,11 +36,7 @@ module MMIOAccBlackBox#
     	output                 busy,
 
     	output reg [31:0] data_out,
-//	input [NUM_OF_CFG_REGS  - 1 : 0] [CFG_REG_WIDTH - 1 : 0]  common_cfg_regs_,
-//	input [RoCC_NUM_INPUTS  - 1 : 0] [CFG_REG_WIDTH - 1 : 0]  input_cfg_regs_,
-//	input [RoCC_NUM_OUTPUTS - 1 : 0] [CFG_REG_WIDTH - 1 : 0]  output_cfg_regs,
 	input [CFG_REG_WIDTH    - 1 : 0]   funct_cfg_reg
-	//need to map all in reg map
 );
 
 reg [31:0] io_resp_data_reg;
@@ -79,33 +75,23 @@ always_ff@(posedge clock, negedge reset) begin
 		io_busy_reg          	      <= 0;
 		io_cmd_ready_reg     	      <= 0;
 		target_latency		      <= 0;
-		//$display("in reset Time = %0t", $time);
 	end
 	else 
 	begin
 		io_resp_valid_reg   <= 0;	
-		//io_cmd_ready_reg     <= 0;
-		//$display("funct=%0d, input_valid=%0b, output_ready=%0b, flag=%0b, time=%0t", io_cmd_bits_inst_funct, input_valid, output_ready, flag, $time);
 
 		if(io_cmd_bits_inst_funct == 2 && input_valid == 1 && flag == 0) begin //COMPUTE
 			target_latency <= LATENCY;
-			//$display("MMIO in compute Time = %0t with Latency=%0d", $time, target_latency);
 
 		end
 		else if(io_cmd_bits_inst_funct == 1 && io_cmd_valid == 1 && flag == 0) begin //CONFIG
-			target_latency <= 4;
-	          			
-			//$display("in config Time = %0t", $time);
-	
+			target_latency <= 4;	
 		end
 
 		if(target_latency != 0 && flag == 0) //recive command.
 		begin
-			//$display("MMIO started computing latency %0d", target_latency);
-			//$display("got here");
 			counter <= 0;
 			flag    <= 1;
-			//io_cmd_ready_reg <= 1;
 			io_busy_reg <= 1;
 		
 		end
@@ -116,28 +102,22 @@ always_ff@(posedge clock, negedge reset) begin
 			counter <= counter + 1;
 			if(counter == target_latency) // finish command count
 			begin
-				//$display("finished counting counter==target_latency");	
 				flag 		  <= 0;
 				counter 	  <= 0;
 				io_resp_valid_reg <= 1;
 				target_latency    <= 0;
 				io_resp_data_reg  <= 8'd06;
-				//io_busy_reg       <= 0;
 			end
 			
 		end // falg
-		//if(io_resp_valid_reg)
-		//	io_busy_reg <= 0;
 
 		if(io_resp_valid_reg && ~output_ready) begin
 			// keep the output_valid alive untill read from it
-			//$display("got to this stupid point of gshahhen");
 			io_resp_valid_reg <= 1;
 		end
 		
 		if(io_resp_valid_reg & output_ready) // give back the data to the cpu.
 		begin
-			//$display("got the output_ready");	
 			io_resp_data_reg  <= 8'd06;
 		        io_resp_valid_reg <= 1;	
 			flag2             <= 1;
@@ -148,16 +128,12 @@ always_ff@(posedge clock, negedge reset) begin
 			io_resp_valid_reg <= 0;
 			flag2             <= 0;
 			io_busy_reg       <= 0;
-		//	io_resp_valid_reg <= 1;
 			flag <= 0;
-			//io_cmd_ready_reg  <= 1;
 		end
 
 		if (io_cmd_bits_inst_funct == 1) begin
 			reg_array[io_cmd_bits_inst_funct] <= io_cmd_bits_inst_funct; //FIXME	
 		end
-
-		//$display("output_valid=%0b, input_ready=%0b, time=%0t", output_valid, input_ready, $time);
 		
 	end // reset
 
@@ -167,7 +143,6 @@ end
 assign data_out		      = io_resp_data_reg;
 assign output_valid 	      = io_resp_valid_reg;
 assign busy 		      = io_busy_reg;
-//assign input_ready	      = io_cmd_ready_reg;
 assign input_ready            = ~io_busy_reg;
 assign io_cmd_bits_inst_funct = funct_cfg_reg;
 assign io_cmd_valid	      = input_valid;
