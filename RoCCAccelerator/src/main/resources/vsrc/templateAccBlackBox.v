@@ -1,6 +1,5 @@
 /*
-* Accelerator module (generic template).
-* Fits both types - MMIO and RoCC accelerators.
+* Accelerator module (RoCC generic template).
 * Counts latency.
 */
 
@@ -44,32 +43,7 @@ module templateAccBlackBox#
 	output [4:0]  io_resp_bits_rd,
 	output [63:0] io_resp_bits_data,
 
-// MMIO interface. 
-// Accelerator --> Memory
-	//input         io_mem_req_ready,
-	//output        io_mem_req_valid,
-	//output [39:0] io_mem_req_bits_addr,
-	//output [7:0]  io_mem_req_bits_tag,
-	//output [4:0]  io_mem_req_bits_cmd,
-	//output [1:0]  io_mem_req_bits_size,
-	//output        io_mem_req_bits_signed,
-	//output        io_mem_req_bits_no_alloc,
-	//output        io_mem_req_bits_no_xcpt,
-	//output [63:0] io_mem_req_bits_data,
-	//output [7:0]  io_mem_req_bits_mask,
-
-// MMIO interface. 
-// Memory --> Accelerator
-	//input         io_mem_resp_valid,
-	//input  [39:0] io_mem_resp_bits_addr,
-	//input  [7:0]  io_mem_resp_bits_tag,
-	//input  [4:0]  io_mem_resp_bits_cmd,
-	//input  [1:0]  io_mem_resp_bits_size,
-	//input         io_mem_resp_bits_signed,
-	//input  [1:0]  io_mem_resp_bits_dprv,
-	//input         io_mem_resp_bits_dv,
-	//input  [63:0] io_mem_resp_bits_data
-
+	// Core - Accelerator interface signlas
   input         io_cmd_bits_inst_xd,
   input         io_cmd_bits_inst_xs1,
   input         io_cmd_bits_inst_xs2,
@@ -258,12 +232,9 @@ always_ff@(posedge clock, negedge reset) begin
 	else 
 	begin
 		
-	//	io_busy_reg 	     <= 0;
 		io_fpu_req_valid_reg <= 0;
 		io_interrupt_reg     <= 0;
 		io_mem_req_valid_reg <= 0;
-		//this
-		//io_cmd_ready_reg     <= 0;
 		io_mem_s2_kill_reg   <= 0;
 		io_mem_keep_clock_enabled_reg <= 1;
 		io_resp_valid_reg <= 0;
@@ -286,10 +257,6 @@ always_ff@(posedge clock, negedge reset) begin
 		begin
 			counter <= 0;
 			flag    <= 1;
-			//this
-			//io_cmd_ready_reg <= 1;
-			//this down
-			//io_resp_rd_reg_temp <= io_cmd_bits_inst_rd;
 			io_busy_reg <= 1;
 		
 		end
@@ -298,7 +265,6 @@ always_ff@(posedge clock, negedge reset) begin
 		begin
 			
 			counter <= counter + 1;
-			//io_cmd_ready_reg <= 1;
 			if(counter == target_latency) // finish command count
 			begin
 				
@@ -315,24 +281,10 @@ always_ff@(posedge clock, negedge reset) begin
 		if(io_resp_valid_reg & io_resp_ready & !flag2) // give back the data to the cpu.
 		begin
 		
-		//	io_resp_rd_reg   <= io_resp_rd_reg_temp;
-		//	io_resp_data_reg <= 8'd06;
-		        //io_resp_valid_reg<= 1;
-
 			flag2            <= 1;
 			io_busy_reg <= 0;
 			io_cmd_ready_reg <= 1;
-			//io_busy_reg      <= 1;
 		end
-
-	//	if(flag2)
-	//	begin
-	//		io_resp_valid_reg <= 1;
-	//		flag2             <= 0;
-	//		io_busy_reg       <= 0;
-	//		// this
-	//		io_cmd_ready_reg  <= 1;
-	//	end
 
 		if (io_cmd_bits_inst_funct == 1) begin
 			reg_array[io_cmd_bits_inst_rs1] <= io_cmd_bits_inst_rs1;	
@@ -350,8 +302,6 @@ assign io_busy 		 = io_busy_reg;
 assign io_interrupt 	 = io_interrupt_reg;
 assign io_fpu_req_valid  = io_fpu_req_valid_reg;
 assign io_mem_req_valid  = io_mem_req_valid_reg;
-//this
-//assign io_cmd_ready	 = io_cmd_ready_reg;
 assign io_cmd_ready = ~io_busy_reg;
 assign io_mem_s2_kill	 = io_mem_s2_kill_reg;
 assign io_mem_keep_clock_enabled = io_mem_keep_clock_enabled_reg;
