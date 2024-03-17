@@ -1,17 +1,6 @@
-//package chipyard.example
 package templateMMIOAcc 
 // scala collections
 
-//import chisel3._
-//import chisel3.util._
-//import chisel3.experimental.{IntParam, BaseModule}
-//import freechips.rocketchip.amba.axi4._
-//import freechips.rocketchip.subsystem.BaseSubsystem
-//import org.chipsalliance.cde.config.{Parameters, Field, Config}
-//import freechips.rocketchip.diplomacy._
-//import freechips.rocketchip.regmapper.{HasRegMap, RegField}
-//import freechips.rocketchip.tilelink._
-//import freechips.rocketchip.util.UIntIsOneOf
 
 import chisel3._
 import chisel3.util._
@@ -41,12 +30,6 @@ case class TemplateMMIOParams(
   MEMORY_BANDWIDTH: Int = 300)
 // DOC include end: MMIO params
 
-
-// FIXME: to be deleted
-// DOC include start: GCD key
-// case object GCDKey extends Field[Option[GCDParams]](None)
-// DOC include end: GCD key
-
 class MMIO_IO() extends Bundle {
   val tap = TemplateMMIOParams()
   val clock = Input(Clock())
@@ -58,16 +41,9 @@ class MMIO_IO() extends Bundle {
   val busy = Output(Bool())
   val data_out = Output(UInt(32.W))
   val funct_cfg_reg = Input(UInt(tap.CFG_REG_WIDTH.W))
-  
-// watch out! might not be true
-  //val common_cfg_reg_ = Output(Vec(tap.NUM_OF_CFG_REGS, UInt(tap.CFG_REG_WIDTH.W)))
-//  val input_cfg_reg_ = Output(Vec(tap.NUM_OF_CFG_REGS, UInt(tap.CFG_REG_WIDTH.W))) //FIXME - same
-//  val output_cfg_reg_ = Output(Vec(tap.NUM_OF_CFG_REGS, UInt(tap.CFG_REG_WIDTH.W))) // FIXME - the NUM_CFG_REGS is not correct
-//  val funct_cfg_reg_ = Output(Vec(1, UInt(tap.CFG_REG_WIDTH.W)))
 }
 
 
-//FIXME: do we need this?
 trait MMIOTopIO extends Bundle {
   val mmio_busy = Output(Bool())
 }
@@ -101,8 +77,6 @@ trait MMIOModule extends HasRegMap {
   val status = Wire(UInt(2.W))
   val data_out = Wire(new DecoupledIO(UInt(32.W)))
   val funct = Wire(new DecoupledIO(UInt(params.CFG_REG_WIDTH.W)))
-  //val splitCfgReg = Vec(UInt(params.CFG_REG_WIDTH.W), UInt(params.NUM_OF_CFG_REGS.W))
-  //val splitCfgReg = Vec(params.CFG_REG_WIDTH, UInt(params.NUM_OF_CFG_REGS.W))
 
   impl.io.clock        := clock
   impl.io.reset        := reset.asBool
@@ -116,12 +90,6 @@ trait MMIOModule extends HasRegMap {
 
   status := Cat(impl.io.input_ready, impl.io.output_valid)
   io.mmio_busy := impl.io.busy
-
-  //for (i <- 0 until params.NUM_OF_CFG_REGS) {
-   // splitCfgReg(i) := VecInit(Seq.tabulate(4)(j => impl.io.common_cfg_reg_(i * 4 + j)))
-  //}
- //val cfg_reg_mapping = splitCfgReg.zip(range(8, 64, 4)).map{case (x, y) => (y -> Seq(x))}
- //val cfg_reg_mapping = splitCfgReg.zip((8 until 64 by 4).toSeq).map { case (x, y) => (y -> Seq(x)) }
 
  regmap(
     0x00 -> Seq(
@@ -142,17 +110,6 @@ class MMIOTL(params: TemplateMMIOParams, beatBytes: Int)(implicit p: Parameters)
       new TLRegBundle(params, _) with MMIOTopIO)(
       new TLRegModule(params, _, _) with MMIOModule)
 
-
-
-// DOC include start: MMIO lazy trait
-//trait CanHavePeripheryMMIO { this: BaseSubsystem =>
-//  private val portName = "mmio"
-//  val mmio = LazyModule(new MMIOTL(TemplateMMIOParams(), pbus.beatBytes)(p))
-//  pbus.coupleTo(portName) { mmio.node := TLFragmenter(pbus.beatBytes, pbus.blockBytes) := _ }
-//  Some(mmio)
-//}
-// DOC include end: MMIO lazy trait
-//
 
 trait CanHavePeripheryMMIO {this: BaseSubsystem =>
   private val portName = "mmio"
@@ -179,22 +136,6 @@ trait CanHavePeripheryMMIOModuleImp extends LazyModuleImp{
   }
 }
 
-
-// I removed this (gshaheen)
-// DOC include start: MMIO imp trait
-//trait CanHavePeripheryMMIOModuleImp extends LazyModuleImp {
-//  val outer: CanHavePeripheryMMIO
-//  val mmio_busy = outer.mmio match {
-//    case Some(mmio) => {
-//      val busy = IO(Output(Bool()))
-//      busy := mmio.module.io.mmio_busy
-//      Some(busy)
-//    }
-//    case None => None
-//  }
-//}
-
-// DOC include end: MMIO imp trait
 
 
 // DOC include start: MMIO config fragment
