@@ -1,0 +1,21 @@
+
+Here are some top level files:
+Matrix Multiplication Accelerator (RoCC): https://github.com/ucb-bar/gemmini
+•	Top level: https://github.com/ucb-bar/gemmini/blob/master/src/main/scala/gemmini/Controller.scala
+•	Command fields/encodings: https://github.com/ucb-bar/gemmini/blob/master/src/main/scala/gemmini/GemminiISA.scala
+Deep Learning Accelerator (MMIO): https://github.com/nvdla/hw
+•	Top level: https://github.com/nvdla/hw/blob/nvdlav1/vmod/nvdla/top/NV_nvdla.v
+•	Integrators manual: http://nvdla.org/hw/v1/integration_guide.html
+SHA3 Accelerator (RoCC): https://github.com/ucb-bar/sha3
+•	Top level: https://github.com/ucb-bar/sha3/blob/master/src/main/scala/sha3.scala
+Protocol Buffer Accelerator (RoCC): https://github.com/ucb-bar/protoacc
+•	Top level: https://github.com/ucb-bar/protoacc/blob/master/src/main/scala/protoacc.scala
+Compression Accelerators (RoCC): https://github.com/sagark/compress-acc-ae
+•	Top level 1: https://github.com/sagark/compress-acc-ae/blob/main/src/main/scala/ZstdCompressor.scala  
+•	Top level 2: https://github.com/sagark/compress-acc-ae/blob/main/src/main/scala/SnappyCompressor.scala
+•	Top level 3: https://github.com/sagark/compress-acc-ae/blob/main/src/main/scala/HufCompressor.scala
+•	Top level 4: https://github.com/sagark/compress-acc-ae/blob/main/src/main/scala/FSECompressor.scala
+Compression Accelerator (Memory Mapped?): https://github.com/opencomputeproject/Project-Zipline
+•	Top level: https://github.com/opencomputeproject/Project-Zipline/blob/60657e17ac9579aaf3751f0b5c0c0710946b0aa9/rtl/cr_cceip_64/cr_cceip_64.v
+•	Example Control Register Enumerations: https://github.com/opencomputeproject/Project-Zipline/blob/60657e17ac9579aaf3751f0b5c0c0710946b0aa9/rtl/cr_cceip_64/cr_cceip_64_regs.vh
+•	Control registers documentation: https://github.com/opencomputeproject/Project-Zipline/tree/60657e17ac9579aaf3751f0b5c0c0710946b0aa9/register_doc
